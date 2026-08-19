@@ -6,6 +6,9 @@ export type SolicitudPsicologo = {
   experiencia: string;
   especialidades: string[];
   mensaje: string;
+  fotoUrl?: string;
+  cvNombre?: string;
+  cvUrl?: string;
   fecha: string;
 };
 

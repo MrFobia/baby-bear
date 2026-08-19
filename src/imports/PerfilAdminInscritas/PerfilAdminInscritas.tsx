@@ -9,8 +9,8 @@ import { leerSolicitudesGuardadas, eliminarSolicitudGuardada, SOLICITUDES_UPDATE
 const ESPECIALIDADES = [
   "Pérdida neonatal",
   "Aborto espontáneo",
-  "Mortinato",
-  "Muerte intrauterina",
+  "Muerte perinatal",
+  "Muerte infantil",
   "Duelo de pareja",
   "Duelo de hermanos",
 ];
@@ -32,21 +32,24 @@ type Psicologo = {
   especialidades: string[];
   email: string;
   telefono: string;
+  cedula?: string;
   activo: boolean;
   imagen?: string;
   descripcion?: string;
   idiomas: string[];
   audiencia: string[];
   horario: Record<string, HorarioDia>;
+  cvNombre?: string;
+  cvUrl?: string;
 };
 
 const horarioDefault = (): Record<string, HorarioDia> =>
   Object.fromEntries(DIAS.map(d => [d, { activo: false, inicio: "9:00", fin: "17:00" }]));
 
 const psicologosIniciales: Psicologo[] = [
-  { id: 1, nombre: "Dra. Ana Martínez", especialidades: ["Pérdida neonatal", "Mortinato"], email: "ana@babybear.org", telefono: "+57 300 123 4567", activo: true, descripcion: "Psicóloga con 10 años de experiencia en duelo perinatal.", idiomas: ["Español"], audiencia: ["Madres", "Parejas"], horario: { ...horarioDefault(), Lunes: { activo: true, inicio: "8:00", fin: "17:00" }, Martes: { activo: true, inicio: "8:00", fin: "17:00" } } },
+  { id: 1, nombre: "Dra. Ana Martínez", especialidades: ["Pérdida neonatal", "Muerte perinatal"], email: "ana@babybear.org", telefono: "+57 300 123 4567", activo: true, descripcion: "Psicóloga con 10 años de experiencia en duelo perinatal.", idiomas: ["Español"], audiencia: ["Madres", "Parejas"], horario: { ...horarioDefault(), Lunes: { activo: true, inicio: "8:00", fin: "17:00" }, Martes: { activo: true, inicio: "8:00", fin: "17:00" } } },
   { id: 2, nombre: "Dr. Carlos Ruiz", especialidades: ["Duelo de pareja"], email: "carlos@babybear.org", telefono: "+57 301 234 5678", activo: true, descripcion: "Especialista en terapia de pareja y duelo.", idiomas: ["Español", "Inglés"], audiencia: ["Parejas", "Padres"], horario: horarioDefault() },
-  { id: 3, nombre: "Dra. Laura Gómez", especialidades: ["Aborto espontáneo", "Muerte intrauterina"], email: "laura@babybear.org", telefono: "+57 302 345 6789", activo: false, descripcion: "", idiomas: ["Español", "Portugués"], audiencia: ["Madres", "Familia"], horario: horarioDefault() },
+  { id: 3, nombre: "Dra. Laura Gómez", especialidades: ["Aborto espontáneo", "Muerte infantil"], email: "laura@babybear.org", telefono: "+57 302 345 6789", activo: false, descripcion: "", idiomas: ["Español", "Portugués"], audiencia: ["Madres", "Familia"], horario: horarioDefault() },
 ];
 
 type EstadoCita = "pendiente" | "asistio" | "no_asistio" | "cancelada";
@@ -93,7 +96,7 @@ type Usuario = {
 
 const usuariosIniciales: Usuario[] = [
   { id: 1001, nombre: "Camila Restrepo", email: "camila.r@correo.com", telefono: "+57 315 400 1111", pais: "Colombia", tipoDocumento: "Cédula de ciudadanía", numeroDocumento: "1020304050", motivo: "Pérdida neonatal", psicologoId: 1, fechaInscripcion: "2024-05-28", notas: "Primera vez que busca acompañamiento psicológico." },
-  { id: 1002, nombre: "Julián Prada", email: "julian.p@correo.com", telefono: "+57 316 400 2222", pais: "Colombia", tipoDocumento: "Cédula de ciudadanía", numeroDocumento: "1030405060", motivo: "Mortinato", psicologoId: 1, fechaInscripcion: "2024-05-30" },
+  { id: 1002, nombre: "Julián Prada", email: "julian.p@correo.com", telefono: "+57 316 400 2222", pais: "Colombia", tipoDocumento: "Cédula de ciudadanía", numeroDocumento: "1030405060", motivo: "Muerte perinatal", psicologoId: 1, fechaInscripcion: "2024-05-30" },
   { id: 1003, nombre: "Mariana Ocampo", email: "mariana.o@correo.com", telefono: "+57 317 400 3333", pais: "Colombia", tipoDocumento: "Cédula de extranjería", numeroDocumento: "5040302010", motivo: "Duelo de pareja", psicologoId: 2, fechaInscripcion: "2024-06-02" },
   { id: 1004, nombre: "Andrés Salazar", email: "andres.s@correo.com", telefono: "+57 318 400 4444", pais: "México", tipoDocumento: "Pasaporte", numeroDocumento: "G12345678", motivo: "Duelo de pareja", psicologoId: 2, fechaInscripcion: "2024-06-05" },
   { id: 1005, nombre: "Valentina Cruz", email: "valentina.c@correo.com", telefono: "+57 319 400 5555", pais: "Colombia", tipoDocumento: "Cédula de ciudadanía", numeroDocumento: "1050607080", motivo: "Aborto espontáneo", fechaInscripcion: "2024-06-12", notas: "Se inscribió pero aún no tiene cita agendada con un psicólogo." },
@@ -108,11 +111,14 @@ type Solicitud = {
   especialidades: string[];
   fecha: string;
   mensaje: string;
+  fotoUrl?: string;
+  cvNombre?: string;
+  cvUrl?: string;
 };
 
 const solicitudesIniciales: Solicitud[] = [
   { id: 101, nombre: "Dra. Valeria Torres", email: "valeria@correo.com", cedula: "1020304050", experiencia: "6-10", especialidades: ["Duelo de hermanos"], fecha: "2024-05-10", mensaje: "Tengo 8 años de experiencia en duelo y me gustaría apoyar a las familias." },
-  { id: 102, nombre: "Dr. Sebastián Mora", email: "sebastian@correo.com", cedula: "1030405060", experiencia: "3-5", especialidades: ["Pérdida neonatal", "Muerte intrauterina"], fecha: "2024-05-14", mensaje: "Psicólogo clínico especializado en perinatal." },
+  { id: 102, nombre: "Dr. Sebastián Mora", email: "sebastian@correo.com", cedula: "1030405060", experiencia: "3-5", especialidades: ["Pérdida neonatal", "Muerte perinatal"], fecha: "2024-05-14", mensaje: "Psicólogo clínico especializado en perinatal." },
   { id: 103, nombre: "Dra. Camila Herrera", email: "camila@correo.com", cedula: "1040506070", experiencia: "mas-10", especialidades: ["Duelo de pareja"], fecha: "2024-05-18", mensaje: "Trabajo con terapia de pareja en situaciones de pérdida." },
 ];
 
@@ -149,6 +155,7 @@ function CheckTag({ label, checked, onChange }: { label: string; checked: boolea
 
 function PsicologoDetalleModal({ psicologo, onClose, onInactivar }: { psicologo: Psicologo; onClose: () => void; onInactivar: (id: number) => void }) {
   const diasActivos = DIAS.filter(d => psicologo.horario[d]?.activo);
+  const valueCls = "font-['Poppins:Regular',sans-serif] text-[#3f364b] text-[16px]";
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
       <div className="bg-white rounded-[20px] w-[580px] max-h-[90vh] overflow-y-auto shadow-xl" onClick={e => e.stopPropagation()}>
@@ -156,73 +163,121 @@ function PsicologoDetalleModal({ psicologo, onClose, onInactivar }: { psicologo:
           <p className="font-['Poppins:SemiBold',sans-serif] text-[#506685] text-[20px] leading-[28px]">Información del psicólogo</p>
           <button onClick={onClose} className="text-[#506685] hover:opacity-70 text-[24px] leading-none cursor-pointer">×</button>
         </div>
-        <div className="px-[32px] py-[24px] flex flex-col gap-[20px]">
-          {psicologo.imagen && (
-            <img src={psicologo.imagen} alt={psicologo.nombre} className="w-[80px] h-[80px] rounded-full object-cover" />
-          )}
-          {[
-            ["Nombre", psicologo.nombre],
-            ["Correo", psicologo.email],
-            ["Teléfono", psicologo.telefono],
-          ].map(([lbl, val]) => (
-            <div key={lbl} className="flex flex-col gap-[4px] border-b border-b-[#fa7e7b] pb-[8px]">
-              <p className={labelCls}>{lbl}</p>
-              <p className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px]">{val}</p>
+        <div className="px-[32px] py-[24px] flex flex-col gap-[24px]">
+
+          {/* Perfil público: esto es lo que ven las familias en la web */}
+          <div className="flex flex-col gap-[16px]">
+            <div className="flex flex-col gap-[2px]">
+              <p className="font-['Poppins:SemiBold',sans-serif] text-[#fa7e7b] text-[13px] uppercase tracking-[0.5px]">Perfil público</p>
+              <p className="font-['Poppins:Regular',sans-serif] text-[#8a96a8] text-[12px]">Esto es lo que verán las familias en la página web.</p>
             </div>
-          ))}
-          {psicologo.descripcion && (
-            <div className="flex flex-col gap-[4px] border-b border-b-[#fa7e7b] pb-[8px]">
-              <p className={labelCls}>Descripción</p>
-              <p className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px]">{psicologo.descripcion}</p>
+
+            {psicologo.imagen && (
+              <img src={psicologo.imagen} alt={psicologo.nombre} className="w-[80px] h-[80px] rounded-full object-cover border-2 border-[#fa7e7b]" />
+            )}
+
+            <div className="flex flex-col gap-[4px]">
+              <p className={labelCls}>Nombre</p>
+              <p className={valueCls}>{psicologo.nombre}</p>
             </div>
-          )}
-          <div className="flex flex-col gap-[8px]">
-            <p className={labelCls}>Especialidades</p>
-            <div className="flex flex-wrap gap-[8px]">
-              {psicologo.especialidades.map(e => <span key={e} className="px-[12px] py-[4px] bg-[rgba(250,126,123,0.1)] text-[#fa7e7b] rounded-full text-[13px] font-['Poppins:Regular',sans-serif]">{e}</span>)}
-            </div>
-          </div>
-          <div className="flex flex-col gap-[8px]">
-            <p className={labelCls}>Idiomas</p>
-            <div className="flex flex-wrap gap-[8px]">
-              {psicologo.idiomas.map(i => <span key={i} className="px-[12px] py-[4px] bg-[rgba(80,102,133,0.1)] text-[#506685] rounded-full text-[13px] font-['Poppins:Regular',sans-serif]">{i}</span>)}
-            </div>
-          </div>
-          <div className="flex flex-col gap-[8px]">
-            <p className={labelCls}>Audiencia</p>
-            <div className="flex flex-wrap gap-[8px]">
-              {psicologo.audiencia.map(a => <span key={a} className="px-[12px] py-[4px] bg-[rgba(80,102,133,0.1)] text-[#506685] rounded-full text-[13px] font-['Poppins:Regular',sans-serif]">{a}</span>)}
-            </div>
-          </div>
-          {diasActivos.length > 0 && (
+
+            {psicologo.descripcion && (
+              <div className="flex flex-col gap-[4px]">
+                <p className={labelCls}>Descripción</p>
+                <p className={valueCls}>{psicologo.descripcion}</p>
+              </div>
+            )}
+
             <div className="flex flex-col gap-[8px]">
-              <p className={labelCls}>Horario disponible</p>
-              {diasActivos.map(d => (
-                <div key={d} className="flex gap-[8px] items-center">
-                  <span className="font-['Poppins:SemiBold',sans-serif] text-[#506685] text-[14px] w-[90px]">{d}</span>
-                  <span className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[14px]">{psicologo.horario[d].inicio} – {psicologo.horario[d].fin}</span>
-                </div>
-              ))}
+              <p className={labelCls}>Especialidades</p>
+              <div className="flex flex-wrap gap-[8px]">
+                {psicologo.especialidades.map(e => <span key={e} className="px-[12px] py-[4px] bg-[rgba(250,126,123,0.1)] text-[#fa7e7b] rounded-full text-[13px] font-['Poppins:Regular',sans-serif]">{e}</span>)}
+              </div>
             </div>
-          )}
-          <div className="flex flex-col gap-[12px] bg-[#f8f9fb] rounded-[12px] p-[16px]">
-            <p className={labelCls}>Estado del psicólogo</p>
-            <div className="flex items-center gap-[12px]">
-              <span className={`px-[12px] py-[4px] rounded-full text-[13px] font-['Poppins:SemiBold',sans-serif] ${psicologo.activo ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>
-                {psicologo.activo ? "Activo" : "Inactivo"}
-              </span>
+
+            <div className="flex flex-col gap-[8px]">
+              <p className={labelCls}>Idiomas</p>
+              <div className="flex flex-wrap gap-[8px]">
+                {psicologo.idiomas.map(i => <span key={i} className="px-[12px] py-[4px] bg-[rgba(80,102,133,0.1)] text-[#506685] rounded-full text-[13px] font-['Poppins:Regular',sans-serif]">{i}</span>)}
+              </div>
             </div>
-            <p className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[13px] leading-[20px]">
-              {psicologo.activo
-                ? "Activo: el psicólogo aparece disponible para los usuarios y puede recibir nuevas citas, cada una con su propio link de Google Meet."
-                : "Inactivo: el psicólogo no aparece disponible para los usuarios y no puede recibir nuevas citas."}
-            </p>
-            <button
-              onClick={() => onInactivar(psicologo.id)}
-              className={`cursor-pointer self-start px-[16px] py-[8px] rounded-[8px] font-['Poppins:SemiBold',sans-serif] text-[13px] text-white transition-colors ${psicologo.activo ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}`}
-            >
-              {psicologo.activo ? "Inactivar psicólogo" : "Activar psicólogo"}
-            </button>
+
+            <div className="flex flex-col gap-[8px]">
+              <p className={labelCls}>Audiencia</p>
+              <div className="flex flex-wrap gap-[8px]">
+                {psicologo.audiencia.map(a => <span key={a} className="px-[12px] py-[4px] bg-[rgba(80,102,133,0.1)] text-[#506685] rounded-full text-[13px] font-['Poppins:Regular',sans-serif]">{a}</span>)}
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-[#f0f0f0]" />
+
+          {/* Información interna: solo para uso administrativo, no se publica */}
+          <div className="flex flex-col gap-[16px]">
+            <div className="flex flex-col gap-[2px]">
+              <p className="font-['Poppins:SemiBold',sans-serif] text-[#506685] text-[13px] uppercase tracking-[0.5px]">Información interna</p>
+              <p className="font-['Poppins:Regular',sans-serif] text-[#8a96a8] text-[12px]">Uso administrativo, no se publica en la web.</p>
+            </div>
+
+            {[
+              ["Correo", psicologo.email],
+              ["Teléfono", psicologo.telefono],
+              ...(psicologo.cedula ? [["Cédula", psicologo.cedula]] : []),
+            ].map(([lbl, val]) => (
+              <div key={lbl} className="flex flex-col gap-[4px] border-b border-b-[#fa7e7b] pb-[8px]">
+                <p className={labelCls}>{lbl}</p>
+                <p className={valueCls}>{val}</p>
+              </div>
+            ))}
+
+            <div className="flex flex-col gap-[4px]">
+              <p className={labelCls}>Currículum (CV)</p>
+              {psicologo.cvUrl ? (
+                <a
+                  href={psicologo.cvUrl}
+                  download={psicologo.cvNombre || "cv"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="self-start flex items-center gap-[8px] px-[12px] py-[8px] rounded-[8px] bg-[#f8f9fb] border border-[#e5e9f0] font-['Poppins:Regular',sans-serif] text-[#506685] text-[13px] hover:bg-[#eef1f6]"
+                >
+                  📄 {psicologo.cvNombre || "Ver archivo"}
+                </a>
+              ) : (
+                <p className="font-['Poppins:Regular',sans-serif] text-[#8a96a8] text-[13px]">Sin archivo adjunto</p>
+              )}
+            </div>
+
+            {diasActivos.length > 0 && (
+              <div className="flex flex-col gap-[8px]">
+                <p className={labelCls}>Horario disponible</p>
+                {diasActivos.map(d => (
+                  <div key={d} className="flex gap-[8px] items-center">
+                    <span className="font-['Poppins:SemiBold',sans-serif] text-[#506685] text-[14px] w-[90px]">{d}</span>
+                    <span className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[14px]">{psicologo.horario[d].inicio} – {psicologo.horario[d].fin}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="flex flex-col gap-[12px] bg-[#f8f9fb] rounded-[12px] p-[16px]">
+              <p className={labelCls}>Estado del psicólogo</p>
+              <div className="flex items-center gap-[12px]">
+                <span className={`px-[12px] py-[4px] rounded-full text-[13px] font-['Poppins:SemiBold',sans-serif] ${psicologo.activo ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>
+                  {psicologo.activo ? "Activo" : "Inactivo"}
+                </span>
+              </div>
+              <p className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[13px] leading-[20px]">
+                {psicologo.activo
+                  ? "Activo: el psicólogo aparece disponible para los usuarios y puede recibir nuevas citas, cada una con su propio link de Google Meet."
+                  : "Inactivo: el psicólogo no aparece disponible para los usuarios y no puede recibir nuevas citas."}
+              </p>
+              <button
+                onClick={() => onInactivar(psicologo.id)}
+                className={`cursor-pointer self-start px-[16px] py-[8px] rounded-[8px] font-['Poppins:SemiBold',sans-serif] text-[13px] text-white transition-colors ${psicologo.activo ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}`}
+              >
+                {psicologo.activo ? "Inactivar psicólogo" : "Activar psicólogo"}
+              </button>
+            </div>
           </div>
         </div>
         <div className="sticky bottom-0 bg-white px-[32px] pb-[32px] pt-[16px] flex gap-[12px] justify-end border-t border-[#f0f0f0]">
@@ -390,11 +445,21 @@ function SolicitudModal({ solicitud, onClose, onAprobar, onRechazar }: {
     idiomas: [] as string[],
     audiencia: [] as string[],
     horario: horarioDefault(),
-    imagen: "",
+    imagen: solicitud.fotoUrl ?? "",
+    cvNombre: solicitud.cvNombre ?? "",
+    cvUrl: solicitud.cvUrl ?? "",
   });
 
   const toggleArr = (k: "especialidades" | "idiomas" | "audiencia", val: string) =>
     setForm(f => ({ ...f, [k]: f[k].includes(val) ? f[k].filter(x => x !== val) : [...f[k], val] }));
+
+  const handleCv = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => setForm(f => ({ ...f, cvNombre: file.name, cvUrl: ev.target?.result as string }));
+    reader.readAsDataURL(file);
+  };
 
   const handleImagen = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -433,15 +498,71 @@ function SolicitudModal({ solicitud, onClose, onAprobar, onRechazar }: {
           {/* Foto */}
           <div className="flex flex-col gap-[8px]">
             <p className={sectionTitle}>Foto de perfil</p>
+            <p className="font-['Poppins:Regular',sans-serif] text-[#8a96a8] text-[12px] -mt-[4px]">Esta es la imagen que verán las familias en la página web.</p>
             <div className="flex items-center gap-[16px]">
               {form.imagen
                 ? <img src={form.imagen} alt="" className="w-[72px] h-[72px] rounded-full object-cover border-2 border-[#fa7e7b]" />
                 : <div className="w-[72px] h-[72px] rounded-full bg-[#cbdcef]/30 border-2 border-dashed border-[#cbdcef] flex items-center justify-center text-[#cbdcef] text-[24px]">+</div>
               }
-              <label className="cursor-pointer px-[16px] py-[8px] border-b-[1.5px] border-b-[#fa7e7b] font-['Poppins:Regular',sans-serif] text-[#506685] text-[14px] hover:opacity-70">
-                Seleccionar imagen
-                <input type="file" accept="image/*" className="hidden" onChange={handleImagen} />
-              </label>
+              {form.imagen ? (
+                <div className="flex items-center gap-[16px]">
+                  <label className="cursor-pointer font-['Poppins:Regular',sans-serif] text-[#506685] text-[14px] hover:opacity-70">
+                    Reemplazar
+                    <input type="file" accept="image/*" className="hidden" onChange={handleImagen} />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setForm(f => ({ ...f, imagen: "" }))}
+                    className="cursor-pointer font-['Poppins:Regular',sans-serif] text-red-500 text-[14px] hover:opacity-70"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              ) : (
+                <label className="cursor-pointer px-[16px] py-[8px] border-b-[1.5px] border-b-[#fa7e7b] font-['Poppins:Regular',sans-serif] text-[#506685] text-[14px] hover:opacity-70">
+                  Seleccionar imagen
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImagen} />
+                </label>
+              )}
+            </div>
+          </div>
+
+          {/* CV */}
+          <div className="flex flex-col gap-[8px]">
+            <p className={sectionTitle}>Currículum (CV)</p>
+            <div className="flex items-center gap-[12px] flex-wrap">
+              {form.cvUrl ? (
+                <>
+                  <a
+                    href={form.cvUrl}
+                    download={form.cvNombre || "cv"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-[8px] px-[12px] py-[8px] rounded-[8px] bg-[#f8f9fb] border border-[#e5e9f0] font-['Poppins:Regular',sans-serif] text-[#506685] text-[13px] hover:bg-[#eef1f6]"
+                  >
+                    📄 {form.cvNombre || "Ver archivo"}
+                  </a>
+                  <label className="cursor-pointer font-['Poppins:Regular',sans-serif] text-[#506685] text-[14px] hover:opacity-70">
+                    Reemplazar
+                    <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleCv} />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setForm(f => ({ ...f, cvNombre: "", cvUrl: "" }))}
+                    className="cursor-pointer font-['Poppins:Regular',sans-serif] text-red-500 text-[14px] hover:opacity-70"
+                  >
+                    Eliminar
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span className="font-['Poppins:Regular',sans-serif] text-[#8a96a8] text-[13px]">Sin archivo adjunto</span>
+                  <label className="cursor-pointer px-[16px] py-[8px] border-b-[1.5px] border-b-[#fa7e7b] font-['Poppins:Regular',sans-serif] text-[#506685] text-[14px] hover:opacity-70">
+                    Seleccionar archivo
+                    <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleCv} />
+                  </label>
+                </>
+              )}
             </div>
           </div>
 
@@ -454,6 +575,7 @@ function SolicitudModal({ solicitud, onClose, onAprobar, onRechazar }: {
           {/* Descripción */}
           <div className="flex flex-col gap-[4px]">
             <label className={labelCls}>Descripción</label>
+            <p className="font-['Poppins:Regular',sans-serif] text-[#8a96a8] text-[12px] -mt-[2px]">Este texto se mostrará como descripción del psicólogo en la página web.</p>
             <textarea className="w-full bg-transparent border-b-[1.5px] border-b-[#fa7e7b] px-[8px] py-[8px] font-['Poppins:Regular',sans-serif] text-[16px] text-[#506685] placeholder-[#cbdcef] outline-none resize-none" rows={3} placeholder="Escriba aquí" value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} />
           </div>
 
@@ -494,10 +616,13 @@ function SolicitudModal({ solicitud, onClose, onAprobar, onRechazar }: {
             onClick={() => {
               onAprobar({
                 nombre: solicitud.nombre, email: solicitud.email, telefono: form.telefono,
+                cedula: solicitud.cedula,
                 descripcion: form.descripcion,
                 especialidades: form.especialidades, idiomas: form.idiomas,
                 audiencia: form.audiencia, horario: form.horario,
                 imagen: form.imagen || undefined,
+                cvNombre: form.cvNombre || undefined,
+                cvUrl: form.cvUrl || undefined,
               });
               onClose();
             }}
@@ -1805,7 +1930,7 @@ function UsuarioDetalleModal({ usuario, psicologo, citas, psicologos, onClose }:
           <p className="font-['Poppins:SemiBold',sans-serif] text-[#506685] text-[20px] leading-[28px]">Información del usuario</p>
           <button onClick={onClose} className="text-[#506685] hover:opacity-70 text-[24px] leading-none cursor-pointer">×</button>
         </div>
-        <div className="px-[32px] py-[24px] flex flex-col gap-[20px]">
+        <div className="px-[32px] py-[24px] flex flex-col gap-[16px]">
           {[
             ["Nombre", usuario.nombre],
             ["Correo", usuario.email],
@@ -1817,15 +1942,15 @@ function UsuarioDetalleModal({ usuario, psicologo, citas, psicologos, onClose }:
             ["Psicólogo asignado", psicologo?.nombre ?? "Sin asignar"],
             ["Fecha de inscripción", usuario.fechaInscripcion],
           ].map(([lbl, val]) => (
-            <div key={lbl} className="flex flex-col gap-[4px] border-b border-b-[#fa7e7b] pb-[8px]">
+            <div key={lbl} className="flex flex-col gap-[4px]">
               <p className={labelCls}>{lbl}</p>
-              <p className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px]">{val}</p>
+              <p className="font-['Poppins:Regular',sans-serif] text-[#3f364b] text-[16px]">{val}</p>
             </div>
           ))}
           {usuario.notas && (
-            <div className="flex flex-col gap-[4px] border-b border-b-[#fa7e7b] pb-[8px]">
+            <div className="flex flex-col gap-[4px]">
               <p className={labelCls}>Notas</p>
-              <p className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px]">{usuario.notas}</p>
+              <p className="font-['Poppins:Regular',sans-serif] text-[#3f364b] text-[16px]">{usuario.notas}</p>
             </div>
           )}
           <div className="flex flex-col gap-[8px]">

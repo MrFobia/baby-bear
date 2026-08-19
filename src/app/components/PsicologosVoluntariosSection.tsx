@@ -5,8 +5,8 @@ import { guardarSolicitud } from "../solicitudes";
 const ESPECIALIDADES = [
   "Pérdida neonatal",
   "Aborto espontáneo",
-  "Mortinato",
-  "Muerte intrauterina",
+  "Muerte perinatal",
+  "Muerte infantil",
   "Duelo de pareja",
   "Duelo de hermanos",
 ];
@@ -47,11 +47,20 @@ export function PsicologosVoluntariosSection() {
     mensaje: "",
     especialidades: [] as string[],
   });
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+  const [cvNombre, setCvNombre] = useState<string>("");
+  const [cvUrl, setCvUrl] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
   const [leftMaxH, setLeftMaxH] = useState<number | undefined>(undefined);
 
   useLayoutEffect(() => {
+    if (submitted) {
+      // Success message is much shorter than the form; don't clamp
+      // the left column to it or its content gets cut off.
+      setLeftMaxH(undefined);
+      return;
+    }
     const update = () => {
       if (formRef.current) setLeftMaxH(formRef.current.offsetHeight);
     };
@@ -63,6 +72,27 @@ export function PsicologosVoluntariosSection() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setFotoPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleCvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setCvNombre("");
+      setCvUrl(null);
+      return;
+    }
+    setCvNombre(file.name);
+    const reader = new FileReader();
+    reader.onload = () => setCvUrl(reader.result as string);
+    reader.readAsDataURL(file);
   };
 
   const toggleEspecialidad = (esp: string) => {
@@ -84,6 +114,9 @@ export function PsicologosVoluntariosSection() {
       experiencia: formData.experiencia,
       especialidades: formData.especialidades,
       mensaje: formData.mensaje,
+      fotoUrl: fotoPreview ?? undefined,
+      cvNombre: cvNombre || undefined,
+      cvUrl: cvUrl ?? undefined,
     });
     setSubmitted(true);
   };
@@ -156,7 +189,7 @@ export function PsicologosVoluntariosSection() {
               <RequirementItem text="Compromiso con el secreto profesional y el marco ético de la profesión." />
               <RequirementItem text="Disposición para colaborar en un modelo de servicio completamente gratuito para las familias." />
             </ul>
-            <div className="flex-1 min-h-0 rounded-[10px] overflow-hidden">
+            <div className="h-[320px] shrink-0 rounded-[10px] overflow-hidden">
               <img
                 src={imgPsicologa}
                 alt="Psicóloga en sesión"
@@ -210,78 +243,119 @@ export function PsicologosVoluntariosSection() {
                   </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-[24px]">
-                  {/* Nombre */}
-                  <div className="flex flex-col gap-[4px]">
-                    <label className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[-0.25px]">
-                      Nombre completo
-                    </label>
-                    <input
-                      type="text"
-                      name="nombre"
-                      required
-                      value={formData.nombre}
-                      onChange={handleChange}
-                      placeholder="Escriba aquí"
-                      className="w-full bg-transparent border-b-[1.5px] border-b-[#fa7e7b] px-[8px] py-[8px] font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[0.1px] outline-none placeholder-[#cbdcef]"
-                    />
-                  </div> 
-
-                  {/* Email */}
-                  <div className="flex flex-col gap-[4px]">
-                    <label className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[-0.25px]">
-                      Correo electrónico
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="@"
-                      className="w-full bg-transparent border-b-[1.5px] border-b-[#fa7e7b] px-[8px] py-[8px] font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[0.1px] outline-none placeholder-[#cbdcef]"
-                    />
-                  </div>
-
-                  {/* Cédula */}
-                  <div className="flex flex-col gap-[4px]">
-                    <label className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[-0.25px]">
-                      Número de documento de identidad
-                    </label>
-                    <input
-                      type="text"
-                      name="cedula"
-                      required
-                      value={formData.cedula}
-                      onChange={handleChange}
-                      placeholder="Escriba aquí"
-                      className="w-full bg-transparent border-b-[1.5px] border-b-[#fa7e7b] px-[8px] py-[8px] font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[0.1px] outline-none placeholder-[#cbdcef]"
-                    />
-                  </div>
-
-                  {/* Años de experiencia */}
-                  <div className="flex flex-col gap-[4px]">
-                    <label className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[-0.25px]">
-                      Años de experiencia como psicólogo
-                    </label>
-                    <div className="relative">
-                      <select
-                        name="experiencia"
+                <form onSubmit={handleSubmit} className="flex flex-col gap-[20px]">
+                  {/* Nombre + Email */}
+                  <div className="grid grid-cols-2 gap-[16px]">
+                    <div className="flex flex-col gap-[4px]">
+                      <label className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[-0.25px]">
+                        Nombre completo
+                      </label>
+                      <input
+                        type="text"
+                        name="nombre"
                         required
-                        value={formData.experiencia}
+                        value={formData.nombre}
                         onChange={handleChange}
-                        className="w-full bg-transparent border-b-[1.5px] border-b-[#fa7e7b] px-[8px] py-[8px] font-['Poppins:Regular',sans-serif] text-[16px] leading-[24px] tracking-[0.1px] outline-none appearance-none cursor-pointer pr-[28px]"
-                        style={{ color: formData.experiencia ? "#506685" : "#cbdcef" }}
-                      >
-                        <option value="" disabled>Seleccione</option>
-                        <option value="1-2">1 – 2 años</option>
-                        <option value="3-5">3 – 5 años</option>
-                        <option value="6-10">6 – 10 años</option>
-                        <option value="mas-10">Más de 10 años</option>
-                      </select>
-                      <svg className="pointer-events-none absolute right-[8px] top-1/2 -translate-y-1/2" width="10" height="6" viewBox="0 0 10 6" fill="none">
-                        <path d="M1 1L5 5L9 1" stroke="#506685" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+                        placeholder="Escriba aquí"
+                        className="w-full bg-transparent border-b-[1.5px] border-b-[#fa7e7b] px-[8px] py-[8px] font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[0.1px] outline-none placeholder-[#cbdcef]"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-[4px]">
+                      <label className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[-0.25px]">
+                        Correo electrónico
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        required
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="@"
+                        className="w-full bg-transparent border-b-[1.5px] border-b-[#fa7e7b] px-[8px] py-[8px] font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[0.1px] outline-none placeholder-[#cbdcef]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Cédula + Años de experiencia */}
+                  <div className="grid grid-cols-2 gap-[16px]">
+                    <div className="flex flex-col gap-[4px]">
+                      <label className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[-0.25px]">
+                        Número de documento
+                      </label>
+                      <input
+                        type="text"
+                        name="cedula"
+                        required
+                        value={formData.cedula}
+                        onChange={handleChange}
+                        placeholder="Escriba aquí"
+                        className="w-full bg-transparent border-b-[1.5px] border-b-[#fa7e7b] px-[8px] py-[8px] font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[0.1px] outline-none placeholder-[#cbdcef]"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-[4px]">
+                      <label className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[-0.25px]">
+                        Años de experiencia
+                      </label>
+                      <div className="relative">
+                        <select
+                          name="experiencia"
+                          required
+                          value={formData.experiencia}
+                          onChange={handleChange}
+                          className="w-full bg-transparent border-b-[1.5px] border-b-[#fa7e7b] px-[8px] py-[8px] font-['Poppins:Regular',sans-serif] text-[16px] leading-[24px] tracking-[0.1px] outline-none appearance-none cursor-pointer pr-[28px]"
+                          style={{ color: formData.experiencia ? "#506685" : "#cbdcef" }}
+                        >
+                          <option value="" disabled>Seleccione</option>
+                          <option value="1-2">1 – 2 años</option>
+                          <option value="3-5">3 – 5 años</option>
+                          <option value="6-10">6 – 10 años</option>
+                          <option value="mas-10">Más de 10 años</option>
+                        </select>
+                        <svg className="pointer-events-none absolute right-[8px] top-1/2 -translate-y-1/2" width="10" height="6" viewBox="0 0 10 6" fill="none">
+                          <path d="M1 1L5 5L9 1" stroke="#506685" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Foto + Hoja de vida */}
+                  <div className="grid grid-cols-2 gap-[16px]">
+                    <div className="flex flex-col gap-[4px]">
+                      <label className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[-0.25px]">
+                        Foto de perfil
+                      </label>
+                      <label className="flex items-center gap-[10px] h-[38px] border border-dashed border-[#cbdcef] rounded-[8px] px-[10px] py-[8px] cursor-pointer hover:border-[#fa7e7b] transition-colors">
+                        {fotoPreview ? (
+                          <img src={fotoPreview} alt="Foto seleccionada" className="w-[20px] h-[20px] rounded-full object-cover shrink-0" />
+                        ) : (
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0">
+                            <circle cx="10" cy="7" r="3" stroke="#cbdcef" strokeWidth="1.5" />
+                            <path d="M3.5 17c1.2-3 4-4.5 6.5-4.5s5.3 1.5 6.5 4.5" stroke="#cbdcef" strokeWidth="1.5" strokeLinecap="round" />
+                          </svg>
+                        )}
+                        <span className="font-['Poppins:Regular',sans-serif] text-[13px] leading-[18px] truncate" style={{ color: fotoPreview ? "#506685" : "#cbdcef" }}>
+                          {fotoPreview ? "Foto seleccionada" : "Subir foto"}
+                        </span>
+                        <input type="file" accept="image/*" onChange={handleFotoChange} className="hidden" />
+                      </label>
+                    </div>
+
+                    <div className="flex flex-col gap-[4px]">
+                      <label className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[-0.25px]">
+                        Hoja de vida
+                      </label>
+                      <label className="flex items-center gap-[10px] h-[38px] border border-dashed border-[#cbdcef] rounded-[8px] px-[10px] py-[8px] cursor-pointer hover:border-[#fa7e7b] transition-colors">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0">
+                          <path d="M6 2.5h5.5L15 6v11a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1Z" stroke={cvNombre ? "#fa7e7b" : "#cbdcef"} strokeWidth="1.5" strokeLinejoin="round" />
+                          <path d="M11.5 2.5V6H15" stroke={cvNombre ? "#fa7e7b" : "#cbdcef"} strokeWidth="1.5" strokeLinejoin="round" />
+                        </svg>
+                        <span className="font-['Poppins:Regular',sans-serif] text-[13px] leading-[18px] truncate" style={{ color: cvNombre ? "#506685" : "#cbdcef" }}>
+                          {cvNombre || "Subir hoja de vida (PDF)"}
+                        </span>
+                        <input type="file" accept=".pdf,.doc,.docx" onChange={handleCvChange} className="hidden" />
+                      </label>
                     </div>
                   </div>
 
