@@ -63,6 +63,7 @@ const NAV_ITEMS = [
   "Inicio",
   "Nuestra historia",
   "Cómo lo hacemos",
+  "Productos",
   "Sé parte de la familia",
   "Contáctanos",
 ];
@@ -78,7 +79,13 @@ export function Header() {
           {NAV_ITEMS.map(item => (
             <button
               key={item}
-              onClick={item === "Inicio" ? () => goTo("home") : undefined}
+              onClick={
+                item === "Inicio"
+                  ? () => goTo("home")
+                  : item === "Productos"
+                  ? () => goTo("productos")
+                  : undefined
+              }
               className="font-['Poppins:Regular',sans-serif] leading-[24px] text-[#506685] text-[16px] text-center tracking-[0.1px] whitespace-nowrap cursor-pointer hover:text-[#fa7e7b] transition-colors"
             >
               {item}
