@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Header } from "../../app/components/Header";
 import { Footer } from "../../app/components/Footer";
 import { ProductCard } from "../../app/components/ProductCard";
+import { ImageWithFallback } from "../../app/components/figma/ImageWithFallback";
 import { PRODUCTS } from "../../app/products";
 import { goToProduct } from "../../app/navigation";
 import BANNER_IMG from "./banner-productos.jpg";
@@ -94,6 +95,8 @@ function ValueCard({
   );
 }
 
+const STORY_PRODUCT = PRODUCTS[0];
+
 export default function ProductosCatalogo() {
   return (
     <div className="size-full bg-white flex flex-col items-center">
@@ -131,7 +134,7 @@ export default function ProductosCatalogo() {
           Compra con propósito
         </h2>
         <p className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[0.1px] text-center max-w-[600px] mt-[16px]">
-          Comenzamos con una pieza. Pronto sumaremos más productos a esta colección — cada una
+          Comenzamos con una pieza. Pronto sumaremos más productos a esta colección, cada una
           diseñada para acompañar y para dar.
         </p>
 
@@ -139,6 +142,40 @@ export default function ProductosCatalogo() {
           {PRODUCTS.map(product => (
             <ProductCard key={product.slug} product={product} />
           ))}
+        </div>
+      </div>
+
+      {/* Story section */}
+      <div className="bg-[#cbdcef] w-full py-[64px] px-[24px] lg:px-[48px]">
+        <div className="max-w-[900px] mx-auto flex flex-col items-center gap-[24px] text-center">
+          <h2 className="font-['Quicksand:SemiBold',sans-serif] font-semibold text-[#fa7e7b] text-[32px] leading-[40px] tracking-[-0.5px]">
+            Un regalo con propósito
+          </h2>
+          {STORY_PRODUCT.story.map((paragraph, i) => (
+            <p
+              key={i}
+              className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[26px] tracking-[0.1px] max-w-[680px]"
+            >
+              {paragraph}
+            </p>
+          ))}
+        </div>
+
+        {/* Card + poem */}
+        <div className="max-w-[900px] mx-auto flex flex-col md:flex-row items-center justify-center gap-[48px] mt-[48px]">
+          <div className="w-[260px] rounded-[10px] overflow-hidden border border-white shadow-[0_12px_32px_rgba(80,102,133,0.18)]">
+            <ImageWithFallback
+              src={STORY_PRODUCT.cardImage}
+              alt="Tarjeta incluida con la pulsera Baby Bear"
+              className="w-full h-auto object-contain bg-white"
+            />
+          </div>
+
+          <div className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[26px] tracking-[-0.25px] text-center md:text-left italic">
+            {STORY_PRODUCT.poem.map((line, i) =>
+              line === "" ? <br key={i} /> : <span key={i}>{line}<br /></span>
+            )}
+          </div>
         </div>
       </div>
 

@@ -1,10 +1,11 @@
 import type { Product } from "../products";
-import { goToProduct } from "../navigation";
 
 export function ProductCard({ product }: { product: Product }) {
   return (
-    <button
-      onClick={() => goToProduct(product.slug)}
+    <a
+      href={product.purchaseUrl}
+      target="_blank"
+      rel="noopener noreferrer"
       className="group flex flex-col items-start text-left w-[320px] bg-white border border-[#c7c9cd] rounded-[10px] overflow-hidden cursor-pointer transition-shadow hover:shadow-[0_12px_32px_rgba(80,102,133,0.16)]"
     >
       <div className="relative w-full aspect-square bg-[#cbdcef] overflow-hidden flex items-center justify-center p-[32px]">
@@ -36,6 +37,6 @@ export function ProductCard({ product }: { product: Product }) {
           </span>
         </div>
       </div>
-    </button>
+    </a>
   );
 }

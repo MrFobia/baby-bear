@@ -36,12 +36,14 @@ export const PRODUCTS: Product[] = [
       "never apart.",
     ],
     story: [
-      "Compra esta pulsera para alguien que amas — mamás, abuelas o niñas. Es un regalo hecho con intención para cualquier ocasión, y también un regalo con significado para una madre o hija que atraviesa un duelo.",
+      "Compra esta pulsera para alguien que amas: mamás, abuelas o niñas. Es un regalo pensado para cualquier ocasión y también un regalo con significado para una madre o una hija que atraviesa un duelo.",
+      "El 10% de las ventas se dona a la Fundación Baby Bear, ayudando a familias en duelo.",
+      "La pulsera llega en un empaque cuidado e incluye esta tarjeta.",
       "Lissa Gail diseñó esta pulsera especialmente para la Fundación Baby Bear, como parte de su programa \"Lissa Gail Gives Back\".",
+      "Con cada compra, el 10% de lo recaudado se dona a la Fundación Baby Bear, acompañando a las familias en su pérdida con compasión, cuidado y esperanza.",
     ],
     cardImage: imgTarjeta,
-    // TODO: reemplazar por la URL real de venta (Shopify, Etsy, etc.)
-    purchaseUrl: "https://example.com/pulsera-baby-bear",
+    purchaseUrl: "https://lissagail.co/products/baby-bear-bracelet",
   },
 ];
 

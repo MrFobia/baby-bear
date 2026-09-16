@@ -159,42 +159,8 @@ export default function ProductoDetalle({ slug }: { slug: string }) {
         </div>
       </div>
 
-      {/* Story section */}
-      <div className="bg-[#cbdcef] mt-[40px] py-[64px] px-[48px]">
-        <div className="max-w-[900px] mx-auto flex flex-col items-center gap-[24px] text-center">
-          <h2 className="font-['Quicksand:SemiBold',sans-serif] font-semibold text-[#fa7e7b] text-[32px] leading-[40px] tracking-[-0.5px]">
-            Un regalo con propósito
-          </h2>
-          {product.story.map((paragraph, i) => (
-            <p
-              key={i}
-              className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[26px] tracking-[0.1px] max-w-[680px]"
-            >
-              {paragraph}
-            </p>
-          ))}
-        </div>
-
-        {/* Card + poem */}
-        <div className="max-w-[900px] mx-auto flex flex-col md:flex-row items-center justify-center gap-[48px] mt-[48px]">
-          <div className="w-[260px] rounded-[10px] overflow-hidden border border-white shadow-[0_12px_32px_rgba(80,102,133,0.18)]">
-            <ImageWithFallback
-              src={product.cardImage}
-              alt="Tarjeta incluida con la pulsera Baby Bear"
-              className="w-full h-auto object-contain bg-white"
-            />
-          </div>
-
-          <div className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[26px] tracking-[-0.25px] text-center md:text-left italic">
-            {product.poem.map((line, i) =>
-              line === "" ? <br key={i} /> : <span key={i}>{line}<br /></span>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* Closing banner */}
-      <div className="h-[320px] overflow-clip relative shrink-0 w-full" data-name="Closing Banner">
+      <div className="h-[320px] overflow-clip relative shrink-0 w-full mt-[40px]" data-name="Closing Banner">
         <div className="absolute inset-0" aria-hidden>
           <img alt="" className="absolute inset-0 w-full h-full object-cover object-center" src={CLOSING_BANNER_IMG} />
           <div className="absolute bg-[#506685] inset-0 mix-blend-multiply" />
