@@ -147,34 +147,35 @@ export default function ProductosCatalogo() {
 
       {/* Story section */}
       <div className="bg-[#cbdcef] w-full py-[64px] px-[24px] lg:px-[48px]">
-        <div className="max-w-[900px] mx-auto flex flex-col items-center gap-[24px] text-center">
-          <h2 className="font-['Quicksand:SemiBold',sans-serif] font-semibold text-[#fa7e7b] text-[32px] leading-[40px] tracking-[-0.5px]">
-            Un regalo con propósito
-          </h2>
-          {STORY_PRODUCT.story.map((paragraph, i) => (
-            <p
-              key={i}
-              className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[26px] tracking-[0.1px] max-w-[680px]"
-            >
-              {paragraph}
-            </p>
-          ))}
-        </div>
+        <div className="max-w-[1080px] mx-auto grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_300px] gap-[48px] lg:gap-[64px] items-center">
+          {/* Copy */}
+          <div className="flex flex-col items-start gap-[20px] text-left">
+            <h2 className="font-['Quicksand:SemiBold',sans-serif] font-semibold text-[#fa7e7b] text-[32px] leading-[40px] tracking-[-0.5px]">
+              Un regalo con propósito
+            </h2>
+            {STORY_PRODUCT.story.map((paragraph, i) => (
+              <p
+                key={i}
+                className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[26px] tracking-[0.1px] max-w-[60ch]"
+              >
+                {paragraph}
+              </p>
+            ))}
 
-        {/* Card + poem */}
-        <div className="max-w-[900px] mx-auto flex flex-col md:flex-row items-center justify-center gap-[48px] mt-[48px]">
-          <div className="w-[260px] rounded-[10px] overflow-hidden border border-white shadow-[0_12px_32px_rgba(80,102,133,0.18)]">
-            <ImageWithFallback
-              src={STORY_PRODUCT.cardImage}
-              alt="Tarjeta incluida con la pulsera Baby Bear"
-              className="w-full h-auto object-contain bg-white"
-            />
+            <p className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[15px] leading-[24px] tracking-[-0.25px] italic mt-[4px]">
+              {STORY_PRODUCT.poem.map((line, i) =>
+                line === "" ? <br key={i} /> : <span key={i}>{line}<br /></span>
+              )}
+            </p>
           </div>
 
-          <div className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[26px] tracking-[-0.25px] text-center md:text-left italic">
-            {STORY_PRODUCT.poem.map((line, i) =>
-              line === "" ? <br key={i} /> : <span key={i}>{line}<br /></span>
-            )}
+          {/* Card */}
+          <div className="justify-self-center md:justify-self-end w-[260px] md:w-full max-w-[300px] rounded-[10px] overflow-hidden border border-white shadow-[0_12px_32px_rgba(80,102,133,0.18)]">
+            <ImageWithFallback
+              src={STORY_PRODUCT.cardImage}
+              alt="Tarjeta incluida con la pulsera Baby Bear, con el poema A little bear, a shining star"
+              className="w-full h-auto object-contain bg-white"
+            />
           </div>
         </div>
       </div>

@@ -37,10 +37,9 @@ export const PRODUCTS: Product[] = [
     ],
     story: [
       "Compra esta pulsera para alguien que amas: mamás, abuelas o niñas. Es un regalo pensado para cualquier ocasión y también un regalo con significado para una madre o una hija que atraviesa un duelo.",
-      "El 10% de las ventas se dona a la Fundación Baby Bear, ayudando a familias en duelo.",
+      "Con cada compra, el 10% de lo recaudado se dona a la Fundación Baby Bear, acompañando a las familias en su pérdida con compasión, cuidado y esperanza.",
       "La pulsera llega en un empaque cuidado e incluye esta tarjeta.",
       "Lissa Gail diseñó esta pulsera especialmente para la Fundación Baby Bear, como parte de su programa \"Lissa Gail Gives Back\".",
-      "Con cada compra, el 10% de lo recaudado se dona a la Fundación Baby Bear, acompañando a las familias en su pérdida con compasión, cuidado y esperanza.",
     ],
     cardImage: imgTarjeta,
     purchaseUrl: "https://lissagail.co/products/baby-bear-bracelet",
