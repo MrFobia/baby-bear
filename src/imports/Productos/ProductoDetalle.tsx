@@ -4,6 +4,7 @@ import { Footer } from "../../app/components/Footer";
 import { ImageWithFallback } from "../../app/components/figma/ImageWithFallback";
 import { getProduct } from "../../app/products";
 import { goTo } from "../../app/navigation";
+import type { Lang } from "../../app/navigation";
 import CLOSING_BANNER_IMG from "./banner-productos.jpg";
 
 function GiftIcon() {
@@ -51,32 +52,74 @@ function TrustBadge({ icon, label }: { icon: ReactNode; label: string }) {
   );
 }
 
-export default function ProductoDetalle({ slug }: { slug: string }) {
+const COPY: Record<Lang, {
+  notFound: string;
+  backToProducts: string;
+  breadcrumbProducts: string;
+  donatedBadge: (donationPercent: number) => string;
+  buyNow: string;
+  badge1: string;
+  badge2: (donationPercent: number) => string;
+  badge3: string;
+  closingBannerText: string;
+  closingBannerCta: (name: string) => string;
+}> = {
+  es: {
+    notFound: "No encontramos este producto.",
+    backToProducts: "Volver a Productos",
+    breadcrumbProducts: "Productos",
+    donatedBadge: donationPercent => `${donationPercent}% donado a la Fundación Baby Bear`,
+    buyNow: "Comprar ahora",
+    badge1: "Empaque cuidado, con tarjeta incluida",
+    badge2: donationPercent => `${donationPercent}% se dona a familias en duelo`,
+    badge3: 'Diseño exclusivo "Lissa Gail Gives Back"',
+    closingBannerText: "Un pequeño gesto que sostiene a una familia entera.",
+    closingBannerCta: name => `Comprar ${name}`,
+  },
+  en: {
+    notFound: "We couldn't find this product.",
+    backToProducts: "Back to Products",
+    breadcrumbProducts: "Products",
+    donatedBadge: donationPercent => `${donationPercent}% donated to the Baby Bear Foundation`,
+    buyNow: "Buy now",
+    badge1: "Thoughtful packaging, card included",
+    badge2: donationPercent => `${donationPercent}% is donated to families facing loss`,
+    badge3: 'Exclusive "Lissa Gail Gives Back" design',
+    closingBannerText: "A small gesture that holds up an entire family.",
+    closingBannerCta: name => `Buy ${name}`,
+  },
+};
+
+export default function ProductoDetalle({ slug, lang = "es" }: { slug: string; lang?: Lang }) {
   const product = getProduct(slug);
   const [activeImage, setActiveImage] = useState(0);
+  const copy = COPY[lang];
 
   if (!product) {
     return (
       <div className="size-full bg-white">
-        <Header />
+        <Header lang={lang} />
         <div className="flex flex-col items-center py-[120px] gap-[16px]">
           <p className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px]">
-            No encontramos este producto.
+            {copy.notFound}
           </p>
           <button
             onClick={() => goTo("productos")}
             className="font-['Quicksand:SemiBold',sans-serif] font-semibold text-[#fa7e7b] text-[16px] cursor-pointer"
           >
-            Volver a Productos
+            {copy.backToProducts}
           </button>
         </div>
       </div>
     );
   }
 
+  const name = lang === "en" ? product.en.name : product.name;
+  const tagline = lang === "en" ? product.en.tagline : product.tagline;
+
   return (
     <div className="size-full bg-white">
-      <Header />
+      <Header lang={lang} />
 
       {/* Breadcrumb */}
       <div className="flex items-center gap-[8px] px-[48px] pt-[32px]">
@@ -84,11 +127,11 @@ export default function ProductoDetalle({ slug }: { slug: string }) {
           onClick={() => goTo("productos")}
           className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[14px] tracking-[0.1px] cursor-pointer hover:text-[#fa7e7b] transition-colors"
         >
-          Productos
+          {copy.breadcrumbProducts}
         </button>
         <ChevronIcon />
         <span className="font-['Poppins:SemiBold',sans-serif] text-[#fa7e7b] text-[14px] tracking-[0.1px]">
-          {product.name}
+          {name}
         </span>
       </div>
 
@@ -99,7 +142,7 @@ export default function ProductoDetalle({ slug }: { slug: string }) {
           <div className="w-full aspect-square bg-[#cbdcef] rounded-[12px] overflow-hidden flex items-center justify-center p-[48px]">
             <ImageWithFallback
               src={product.images[activeImage]}
-              alt={product.name}
+              alt={name}
               className="w-full h-full object-contain"
             />
           </div>
@@ -113,7 +156,7 @@ export default function ProductoDetalle({ slug }: { slug: string }) {
                     i === activeImage ? "border-[#fa7e7b]" : "border-transparent hover:border-[#c7c9cd]"
                   }`}
                 >
-                  <ImageWithFallback src={src} alt={`${product.name} vista ${i + 1}`} className="w-full h-full object-contain" />
+                  <ImageWithFallback src={src} alt={`${name} ${i + 1}`} className="w-full h-full object-contain" />
                 </button>
               ))}
             </div>
@@ -124,15 +167,15 @@ export default function ProductoDetalle({ slug }: { slug: string }) {
         <div id="comprar" className="flex flex-col items-start gap-[20px] w-full lg:w-[420px] scroll-mt-[32px]">
           <div className="flex items-center gap-[8px] bg-[#f8dcd8] rounded-[50px] px-[12px] py-[6px]">
             <span className="font-['Poppins:SemiBold',sans-serif] text-[#506685] text-[12px] tracking-[0.1px]">
-              {product.donationPercent}% donado a la Fundación Baby Bear
+              {copy.donatedBadge(product.donationPercent)}
             </span>
           </div>
 
           <h1 className="font-['Quicksand:Bold',sans-serif] font-bold text-[#506685] text-[36px] leading-[42px] tracking-[-0.5px]">
-            {product.name}
+            {name}
           </h1>
           <p className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[0.1px]">
-            {product.tagline}
+            {tagline}
           </p>
 
           <span className="font-['Quicksand:Bold',sans-serif] font-bold text-[#fa7e7b] text-[32px]">
@@ -146,15 +189,15 @@ export default function ProductoDetalle({ slug }: { slug: string }) {
             className="w-full h-[44px] bg-[#fa7e7b] rounded-[5px] cursor-pointer hover:bg-[#e86e6b] transition-colors flex items-center justify-center"
           >
             <span className="font-['Quicksand:SemiBold',sans-serif] font-semibold text-[16px] text-white">
-              Comprar ahora
+              {copy.buyNow}
             </span>
           </a>
 
           {/* Trust badges */}
           <div className="flex items-start w-full gap-[8px] mt-[16px] pt-[24px] border-t border-[#c7c9cd]">
-            <TrustBadge icon={<GiftIcon />} label="Empaque cuidado, con tarjeta incluida" />
-            <TrustBadge icon={<HeartIcon />} label={`${product.donationPercent}% se dona a familias en duelo`} />
-            <TrustBadge icon={<SparkleIcon />} label='Diseño exclusivo "Lissa Gail Gives Back"' />
+            <TrustBadge icon={<GiftIcon />} label={copy.badge1} />
+            <TrustBadge icon={<HeartIcon />} label={copy.badge2(product.donationPercent)} />
+            <TrustBadge icon={<SparkleIcon />} label={copy.badge3} />
           </div>
         </div>
       </div>
@@ -168,7 +211,7 @@ export default function ProductoDetalle({ slug }: { slug: string }) {
 
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-[20px] px-[24px] text-center">
           <p className="font-['Quicksand:SemiBold',sans-serif] font-semibold text-white text-[28px] leading-[36px] max-w-[560px]">
-            Un pequeño gesto que sostiene a una familia entera.
+            {copy.closingBannerText}
           </p>
           <a
             href={product.purchaseUrl}
@@ -177,13 +220,13 @@ export default function ProductoDetalle({ slug }: { slug: string }) {
             className="bg-[#fa7e7b] px-[32px] py-[14px] rounded-[5px] cursor-pointer hover:bg-[#e86e6b] transition-colors"
           >
             <span className="font-['Quicksand:SemiBold',sans-serif] font-semibold text-[18px] text-white">
-              Comprar {product.name}
+              {copy.closingBannerCta(name)}
             </span>
           </a>
         </div>
       </div>
 
-      <Footer />
+      <Footer lang={lang} />
     </div>
   );
 }

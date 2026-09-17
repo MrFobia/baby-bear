@@ -10,6 +10,11 @@ export type Product = {
   cardImage: string;
   donationPercent: number;
   purchaseUrl: string;
+  en: {
+    name: string;
+    tagline: string;
+    story: string[];
+  };
 };
 
 import imgTarjeta from "../imports/ProductoPulsera/tarjeta-baby-bear.png";
@@ -43,6 +48,16 @@ export const PRODUCTS: Product[] = [
     ],
     cardImage: imgTarjeta,
     purchaseUrl: "https://lissagail.co/products/baby-bear-bracelet",
+    en: {
+      name: "Baby Bear Bracelet",
+      tagline: "A little reminder, close to the heart",
+      story: [
+        "Get this bracelet for someone you love: moms, grandmothers, or daughters. It's a gift for any occasion, and also a meaningful gift for a mother or daughter going through grief.",
+        "With every purchase, 10% of proceeds is donated to the Baby Bear Foundation, supporting families through loss with compassion, care, and hope.",
+        "The bracelet arrives in thoughtful packaging and includes this card.",
+        "Lissa Gail designed this bracelet especially for the Baby Bear Foundation, as part of her \"Lissa Gail Gives Back\" program.",
+      ],
+    },
   },
 ];
 

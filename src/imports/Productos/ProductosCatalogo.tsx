@@ -5,6 +5,7 @@ import { ProductCard } from "../../app/components/ProductCard";
 import { ImageWithFallback } from "../../app/components/figma/ImageWithFallback";
 import { PRODUCTS } from "../../app/products";
 import { goToProduct } from "../../app/navigation";
+import type { Lang } from "../../app/navigation";
 import BANNER_IMG from "./banner-productos.jpg";
 
 function HeartIcon({ stroke = "#fa7e7b" }: { stroke?: string }) {
@@ -33,8 +34,64 @@ function SparkleIcon({ stroke = "#506685" }: { stroke?: string }) {
   );
 }
 
-function Banner() {
+const COPY: Record<Lang, {
+  badge: string;
+  heroTitle: string;
+  heroBody: (donationPercent: number) => string;
+  heroCta: (name: string) => string;
+  value1Title: string; value1Body: string;
+  value2Title: string; value2Body: string;
+  value3Title: string; value3Body: string;
+  eyebrow: string;
+  catalogTitle: string;
+  catalogBody: string;
+  storyTitle: string;
+  cardAlt: string;
+}> = {
+  es: {
+    badge: "Lissa Gail Gives Back",
+    heroTitle: "Piezas que acompañan",
+    heroBody: donationPercent =>
+      `Joyería diseñada con intención por Lissa Gail. El ${donationPercent}% de cada venta se dona directamente a familias en duelo perinatal a través de la Fundación Baby Bear.`,
+    heroCta: name => `Ver ${name}`,
+    value1Title: "Empaque con intención",
+    value1Body: "Cada pieza llega en un empaque cuidado, con una tarjeta con mensaje incluida.",
+    value2Title: "10% se dona",
+    value2Body: "Del valor de cada venta se destina directo a familias en duelo perinatal.",
+    value3Title: "Diseño exclusivo",
+    value3Body: 'Piezas creadas por Lissa Gail para el programa "Lissa Gail Gives Back".',
+    eyebrow: "Producto",
+    catalogTitle: "Compra con propósito",
+    catalogBody:
+      "Comenzamos con una pieza. Pronto sumaremos más productos a esta colección, cada una diseñada para acompañar y para dar.",
+    storyTitle: "Un regalo con propósito",
+    cardAlt: "Tarjeta incluida con la pulsera Baby Bear, con el poema A little bear, a shining star",
+  },
+  en: {
+    badge: "Lissa Gail Gives Back",
+    heroTitle: "Pieces that stay with you",
+    heroBody: donationPercent =>
+      `Jewelry designed with intention by Lissa Gail. ${donationPercent}% of every sale is donated directly to families facing perinatal loss through the Baby Bear Foundation.`,
+    heroCta: name => `See ${name}`,
+    value1Title: "Packaging with intention",
+    value1Body: "Every piece arrives in thoughtful packaging, with a message card included.",
+    value2Title: "10% is donated",
+    value2Body: "From the value of every sale, given directly to families facing grief after baby or child loss.",
+    value3Title: "Exclusive design",
+    value3Body: 'Pieces created by Lissa Gail for the "Lissa Gail Gives Back" program.',
+    eyebrow: "Product",
+    catalogTitle: "Shop with purpose",
+    catalogBody:
+      "We're starting with one piece. We'll soon add more products to this collection, each one designed to accompany and to give.",
+    storyTitle: "A gift with purpose",
+    cardAlt: "Card included with the Baby Bear bracelet, with the poem A little bear, a shining star",
+  },
+};
+
+function Banner({ lang }: { lang: Lang }) {
+  const copy = COPY[lang];
   const featured = PRODUCTS[0];
+  const name = lang === "en" ? featured.en.name : featured.name;
   return (
     <div className="h-[520px] overflow-clip relative shrink-0 w-full" data-name="Banner">
       <div className="absolute inset-0" aria-hidden>
@@ -45,17 +102,16 @@ function Banner() {
       <div className="absolute inset-0 flex flex-col items-start justify-center gap-[24px] left-[24px] lg:left-[96px] max-w-[620px]">
         <div className="bg-[#506685] content-stretch flex items-center justify-center px-[10px] py-[5px] rounded-[50px] shrink-0">
           <p className="font-['Poppins:Regular',sans-serif] text-[#cbdcef] text-[12px] tracking-[0.1px] whitespace-nowrap">
-            Lissa Gail Gives Back
+            {copy.badge}
           </p>
         </div>
 
         <h1 className="font-['Quicksand:Bold',sans-serif] font-bold leading-[56px] text-[#fa7e7b] text-[44px] lg:text-[56px]">
-          Piezas que acompañan
+          {copy.heroTitle}
         </h1>
 
         <p className="font-['Poppins:Regular',sans-serif] leading-[24px] text-[16px] text-white tracking-[0.1px] max-w-[520px]">
-          Joyería diseñada con intención por Lissa Gail. El {featured.donationPercent}% de cada
-          venta se dona directamente a familias en duelo perinatal a través de la Fundación Baby Bear.
+          {copy.heroBody(featured.donationPercent)}
         </p>
 
         <button
@@ -63,7 +119,7 @@ function Banner() {
           className="bg-[#fa7e7b] content-stretch flex items-center justify-center px-[24px] py-[12px] relative rounded-[5px] shrink-0 cursor-pointer hover:bg-[#e86e6b] transition-colors"
         >
           <span className="font-['Quicksand:SemiBold',sans-serif] font-semibold text-[18px] text-white whitespace-nowrap">
-            Ver {featured.name}
+            {copy.heroCta(name)}
           </span>
         </button>
       </div>
@@ -97,50 +153,41 @@ function ValueCard({
 
 const STORY_PRODUCT = PRODUCTS[0];
 
-export default function ProductosCatalogo() {
+export default function ProductosCatalogo({ lang = "es" }: { lang?: Lang }) {
+  const copy = COPY[lang];
+  const story = lang === "en" ? STORY_PRODUCT.en.story : STORY_PRODUCT.story;
   return (
     <div className="size-full bg-white flex flex-col items-center">
-      <Header />
-      <Banner />
+      <Header lang={lang} />
+      <Banner lang={lang} />
 
       {/* Value strip */}
       <div className="flex flex-wrap gap-[32px] items-start justify-center w-full max-w-[1320px] px-[24px] lg:px-0 -mt-[64px] relative z-10">
-        <ValueCard
-          variant="light"
-          icon={<GiftIcon />}
-          title="Empaque con intención"
-          description="Cada pieza llega en un empaque cuidado, con una tarjeta con mensaje incluida."
-        />
+        <ValueCard variant="light" icon={<GiftIcon />} title={copy.value1Title} description={copy.value1Body} />
         <ValueCard
           variant="dark"
           icon={<HeartIcon stroke="#fa7e7b" />}
-          title="10% se dona"
-          description="Del valor de cada venta se destina directo a familias en duelo perinatal."
+          title={copy.value2Title}
+          description={copy.value2Body}
         />
-        <ValueCard
-          variant="pink"
-          icon={<SparkleIcon />}
-          title="Diseño exclusivo"
-          description={'Piezas creadas por Lissa Gail para el programa "Lissa Gail Gives Back".'}
-        />
+        <ValueCard variant="pink" icon={<SparkleIcon />} title={copy.value3Title} description={copy.value3Body} />
       </div>
 
       {/* Catalog */}
       <div className="flex flex-col items-center w-full px-[24px] py-[80px]">
         <p className="font-['Poppins:SemiBold',sans-serif] text-[#fa7e7b] text-[14px] tracking-[0.2px] uppercase mb-[8px]">
-          Producto
+          {copy.eyebrow}
         </p>
         <h2 className="font-['Quicksand:SemiBold',sans-serif] font-semibold text-[#506685] text-[40px] leading-[48px] text-center tracking-[-0.5px] max-w-[700px]">
-          Compra con propósito
+          {copy.catalogTitle}
         </h2>
         <p className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[24px] tracking-[0.1px] text-center max-w-[600px] mt-[16px]">
-          Comenzamos con una pieza. Pronto sumaremos más productos a esta colección, cada una
-          diseñada para acompañar y para dar.
+          {copy.catalogBody}
         </p>
 
         <div className="flex flex-wrap items-start justify-center gap-[32px] mt-[48px] w-full">
           {PRODUCTS.map(product => (
-            <ProductCard key={product.slug} product={product} />
+            <ProductCard key={product.slug} product={product} lang={lang} />
           ))}
         </div>
       </div>
@@ -151,9 +198,9 @@ export default function ProductosCatalogo() {
           {/* Copy */}
           <div className="flex flex-col items-start gap-[20px] text-left">
             <h2 className="font-['Quicksand:SemiBold',sans-serif] font-semibold text-[#fa7e7b] text-[32px] leading-[40px] tracking-[-0.5px]">
-              Un regalo con propósito
+              {copy.storyTitle}
             </h2>
-            {STORY_PRODUCT.story.map((paragraph, i) => (
+            {story.map((paragraph, i) => (
               <p
                 key={i}
                 className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] leading-[26px] tracking-[0.1px] max-w-[60ch]"
@@ -166,11 +213,7 @@ export default function ProductosCatalogo() {
           {/* Card + poem */}
           <div className="flex flex-col sm:flex-row items-center gap-[24px] lg:gap-[32px] justify-self-center md:justify-self-end">
             <div className="w-[220px] shrink-0 rounded-[10px] overflow-hidden border border-white shadow-[0_12px_32px_rgba(80,102,133,0.18)]">
-              <ImageWithFallback
-                src={STORY_PRODUCT.cardImage}
-                alt="Tarjeta incluida con la pulsera Baby Bear, con el poema A little bear, a shining star"
-                className="w-full h-auto object-contain bg-white"
-              />
+              <ImageWithFallback src={STORY_PRODUCT.cardImage} alt={copy.cardAlt} className="w-full h-auto object-contain bg-white" />
             </div>
 
             <p className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[15px] leading-[24px] tracking-[-0.25px] italic text-center sm:text-left">
@@ -182,7 +225,7 @@ export default function ProductosCatalogo() {
         </div>
       </div>
 
-      <Footer />
+      <Footer lang={lang} />
     </div>
   );
 }

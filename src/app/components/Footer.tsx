@@ -1,5 +1,6 @@
 import svgPaths from "../../imports/ApoyoPsicologico/svg-vm890ft95n";
 import { imgControl } from "../../imports/ApoyoPsicologico/svg-dt6p2";
+import type { Lang } from "../navigation";
 
 function FooterLogo() {
   return (
@@ -78,7 +79,42 @@ function FooterColumn({ title, items }: { title: string; items: string[] }) {
   );
 }
 
-export function Footer() {
+const FOOTER_COPY: Record<Lang, {
+  about: string; aboutItems: string[];
+  family: string; familyItems: string[];
+  contact: string; contactItems: string[];
+  subscribe: string; subscribeBlurb: string;
+  legal: string[];
+  rights: string;
+}> = {
+  es: {
+    about: "Acerca de nosotros",
+    aboutItems: ["Nuestra historia", "Porqué lo hacemos", "Cómo lo hacemos"],
+    family: "Únete a la familia",
+    familyItems: ["Donaciones", "Cómo sumarme"],
+    contact: "Contáctanos",
+    contactItems: ["Laurasanint@babybear", "foundation.org"],
+    subscribe: "Suscríbete",
+    subscribeBlurb: "Suscríbete a nuestro boletín para estar al día de todas nuestras acciones.",
+    legal: ["Términos y condiciones", "Política de privacidad", "Documentación Legal"],
+    rights: "© 2024 Baby Bear Foundation. All right reserved.",
+  },
+  en: {
+    about: "About us",
+    aboutItems: ["Our story", "Why we do it", "How we do it"],
+    family: "Join the family",
+    familyItems: ["Donations", "How to join"],
+    contact: "Contact us",
+    contactItems: ["Laurasanint@babybear", "foundation.org"],
+    subscribe: "Subscribe",
+    subscribeBlurb: "Subscribe to our newsletter to stay up to date with everything we do.",
+    legal: ["Terms and conditions", "Privacy policy", "Legal documentation"],
+    rights: "© 2024 Baby Bear Foundation. All right reserved.",
+  },
+};
+
+export function Footer({ lang = "es" }: { lang?: Lang }) {
+  const copy = FOOTER_COPY[lang];
   return (
     <div className="bg-[#e0d2b7] relative shrink-0 w-full" data-name="Footer">
       <div className="flex flex-col items-center px-[24px] md:px-[93px] py-[48px] gap-[24px] w-full">
@@ -88,38 +124,35 @@ export function Footer() {
             <SocialIcons />
           </div>
 
-          <FooterColumn
-            title="Acerca de nosotros"
-            items={["Nuestra historia", "Porqué lo hacemos", "Cómo lo hacemos"]}
-          />
-          <FooterColumn title="Únete a la familia" items={["Donaciones", "Cómo sumarme"]} />
-          <FooterColumn title="Contáctanos" items={["Laurasanint@babybear", "foundation.org"]} />
+          <FooterColumn title={copy.about} items={copy.aboutItems} />
+          <FooterColumn title={copy.family} items={copy.familyItems} />
+          <FooterColumn title={copy.contact} items={copy.contactItems} />
 
           <div className="flex flex-col gap-[22px] items-start">
             <p className="font-['Poppins:SemiBold',sans-serif] leading-[24px] text-[#506685] text-[16px] tracking-[0.1px] whitespace-nowrap">
-              Suscríbete
+              {copy.subscribe}
             </p>
             <div className="h-[48px] w-[280px] md:w-[350px] bg-[#cbdcef]/40 rounded-[4px] flex items-center px-[16px] justify-between">
               <span className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] tracking-[0.1px] opacity-50">
-                Suscríbete
+                {copy.subscribe}
               </span>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path clipRule="evenodd" fillRule="evenodd" d={svgPaths.p42680} fill="#506685" />
               </svg>
             </div>
             <p className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[12px] w-[280px] md:w-[350px]">
-              Suscríbete a nuestro boletín para estar al día de todas nuestras acciones.
+              {copy.subscribeBlurb}
             </p>
           </div>
         </div>
 
         <div className="flex flex-col gap-[14px] items-center text-[#506685] text-[14px]">
           <div className="flex flex-wrap gap-[24px] items-start justify-center font-['Poppins:Medium',sans-serif] p-[16px]">
-            <p>Términos y condiciones</p>
-            <p>Política de privacidad</p>
-            <p>Documentación Legal</p>
+            {copy.legal.map(item => (
+              <p key={item}>{item}</p>
+            ))}
           </div>
-          <p className="font-['Poppins:Regular',sans-serif]">© 2024 Baby Bear Foundation. All right reserved.</p>
+          <p className="font-['Poppins:Regular',sans-serif]">{copy.rights}</p>
         </div>
       </div>
     </div>

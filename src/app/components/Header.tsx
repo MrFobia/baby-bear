@@ -1,5 +1,5 @@
 import svgPaths from "../../imports/ApoyoPsicologico/svg-vm890ft95n";
-import { goTo } from "../navigation";
+import { goTo, toggleLang, type Lang } from "../navigation";
 
 function LogoBabyBear({ onClick }: { onClick?: () => void }) {
   return (
@@ -59,16 +59,13 @@ function LogoBabyBear({ onClick }: { onClick?: () => void }) {
   );
 }
 
-const NAV_ITEMS = [
-  "Inicio",
-  "Nuestra historia",
-  "Cómo lo hacemos",
-  "Productos",
-  "Sé parte de la familia",
-  "Contáctanos",
-];
+const NAV_ITEMS: Record<Lang, string[]> = {
+  es: ["Inicio", "Nuestra historia", "Cómo lo hacemos", "Productos", "Sé parte de la familia", "Contáctanos"],
+  en: ["Home", "Our story", "How we do it", "Products", "Join the family", "Contact us"],
+};
 
-export function Header() {
+export function Header({ lang = "es" }: { lang?: Lang }) {
+  const navItems = NAV_ITEMS[lang];
   return (
     <div className="relative h-[120px] w-full shrink-0">
       <div className="absolute inset-0 bg-[#cbdcef] flex items-center justify-between overflow-clip pl-[48px] py-[48px]">
@@ -76,13 +73,13 @@ export function Header() {
 
         {/* Nav */}
         <nav className="flex gap-[24px] items-center">
-          {NAV_ITEMS.map(item => (
+          {navItems.map((item, i) => (
             <button
               key={item}
               onClick={
-                item === "Inicio"
+                i === 0
                   ? () => goTo("home")
-                  : item === "Productos"
+                  : i === 3
                   ? () => goTo("productos")
                   : undefined
               }
@@ -93,12 +90,18 @@ export function Header() {
           ))}
 
           {/* Language */}
-          <div className="flex gap-[8px] items-center cursor-pointer">
-            <span className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] tracking-[0.1px]">Esp</span>
+          <button
+            onClick={toggleLang}
+            className="flex gap-[8px] items-center cursor-pointer"
+            aria-label="Cambiar idioma / Switch language"
+          >
+            <span className="font-['Poppins:Regular',sans-serif] text-[#506685] text-[16px] tracking-[0.1px]">
+              {lang === "es" ? "Esp" : "Eng"}
+            </span>
             <svg width="10" height="7" viewBox="0 0 10 7" fill="none">
               <path d="M1 1.5L5 5.5L9 1.5" stroke="#506685" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-          </div>
+          </button>
 
           {/* User circle → dashboard */}
           <button
@@ -116,7 +119,9 @@ export function Header() {
 
         {/* Donar */}
         <button className="bg-[#fa7e7b] flex gap-[10px] items-center justify-center overflow-clip py-[50px] w-[160px] cursor-pointer hover:bg-[#e86e6b] transition-colors">
-          <span className="font-['Quicksand:SemiBold',sans-serif] font-semibold leading-[60px] text-[24px] text-white tracking-[-1px] whitespace-nowrap">Donar</span>
+          <span className="font-['Quicksand:SemiBold',sans-serif] font-semibold leading-[60px] text-[24px] text-white tracking-[-1px] whitespace-nowrap">
+            {lang === "es" ? "Donar" : "Donate"}
+          </span>
           <svg width="20" height="20" viewBox="0 0 20.1946 19.2605" fill="none">
             <path d={svgPaths.p54a9a80} fill="white" />
           </svg>
